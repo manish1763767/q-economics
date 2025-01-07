@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import TestCatalog from './pages/TestCatalog';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import AdminLogin from './pages/AdminLogin';
 
 const theme = createTheme({
   palette: {
@@ -79,6 +80,15 @@ const theme = createTheme({
   },
 });
 
+// Protected Route component
+const ProtectedAdminRoute = ({ children }) => {
+  const isAdmin = localStorage.getItem('isAdmin');
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -91,7 +101,15 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/tests" element={<TestCatalog />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <Admin />
+              </ProtectedAdminRoute>
+            }
+          />
         </Routes>
       </Router>
     </ThemeProvider>

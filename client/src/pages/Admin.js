@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -39,6 +40,7 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 function Admin() {
+  const navigate = useNavigate();
   const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogType, setDialogType] = useState('');
@@ -53,6 +55,14 @@ function Admin() {
     { id: 1, title: 'Microeconomics Test 1', subject: 'Microeconomics', duration: '60 mins' },
     { id: 2, title: 'Macroeconomics Quiz', subject: 'Macroeconomics', duration: '30 mins' },
   ]);
+
+  // Check admin authentication
+  useEffect(() => {
+    const isAdmin = localStorage.getItem('isAdmin');
+    if (!isAdmin) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
