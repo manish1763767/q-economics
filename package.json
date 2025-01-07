@@ -46,6 +46,7 @@
     "winston-elasticsearch": "^0.17.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/jest": "^27.5.2",
     "autocannon": "^7.12.0",
     "concurrently": "^8.2.2",
