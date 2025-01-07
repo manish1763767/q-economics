@@ -5,7 +5,7 @@ import {
   Paper,
   Typography,
   Box,
-  List
+  List,
   ListItem,
   ListItemText,
   LinearProgress,
