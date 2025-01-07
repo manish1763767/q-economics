@@ -26,12 +26,14 @@ import {
   Dashboard as DashboardIcon,
   Login as LoginIcon,
   PersonAdd as PersonAddIcon,
+  AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material';
 
 const pages = [
   { title: 'Home', path: '/', icon: HomeIcon },
   { title: 'Tests', path: '/tests', icon: LibraryBooksIcon },
   { title: 'Dashboard', path: '/dashboard', icon: DashboardIcon },
+  { title: 'Admin', path: '/admin', icon: AdminIcon, adminOnly: true },
 ];
 
 const authPages = [
@@ -44,6 +46,9 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Mock isAdmin state - replace with actual auth logic
+  const [isAdmin] = useState(true);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -57,10 +62,12 @@ function Navbar() {
     setAnchorElUser(null);
   };
 
+  const filteredPages = pages.filter(page => !page.adminOnly || (page.adminOnly && isAdmin));
+
   const drawer = (
     <Box sx={{ width: 250, pt: 2 }}>
       <List>
-        {pages.map((page) => (
+        {filteredPages.map((page) => (
           <ListItem
             button
             key={page.title}
@@ -146,7 +153,7 @@ function Navbar() {
             <>
               {/* Desktop navigation */}
               <Box sx={{ flexGrow: 1, display: 'flex', ml: 4 }}>
-                {pages.map((page) => (
+                {filteredPages.map((page) => (
                   <Button
                     key={page.title}
                     component={RouterLink}

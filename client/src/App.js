@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import TestCatalog from './pages/TestCatalog';
 import Dashboard from './pages/Dashboard';
+import Admin from './pages/Admin';
 
 const theme = createTheme({
   palette: {
@@ -90,6 +91,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/tests" element={<TestCatalog />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </Router>
     </ThemeProvider>
