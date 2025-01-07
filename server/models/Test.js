@@ -1,78 +1,85 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const testSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: [true, 'Test title is required'],
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: [true, 'Test description is required'],
-    },
-    category: {
-      type: String,
-      required: [true, 'Test category is required'],
-      enum: ['Microeconomics', 'Macroeconomics', 'Statistics', 'Economic History'],
-    },
-    difficulty: {
-      type: String,
-      required: [true, 'Difficulty level is required'],
-      enum: ['Beginner', 'Intermediate', 'Advanced'],
-    },
-    duration: {
-      type: Number, // in minutes
-      required: [true, 'Test duration is required'],
-    },
-    totalMarks: {
-      type: Number,
-      required: [true, 'Total marks is required'],
-    },
-    passingMarks: {
-      type: Number,
-      required: [true, 'Passing marks is required'],
-    },
-    questions: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Question',
-      required: true,
-    }],
-    isPublished: {
-      type: Boolean,
-      default: false,
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    instructions: {
-      type: String,
-      required: [true, 'Test instructions are required'],
-    },
-    tags: [{
-      type: String,
-      trim: true,
-    }],
-    attempts: {
-      type: Number,
-      default: 0,
-    },
-    averageScore: {
-      type: Number,
-      default: 0,
-    },
+const Test = sequelize.define('Test', {
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
-  {
-    timestamps: true,
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  category: {
+    type: DataTypes.ENUM('Microeconomics', 'Macroeconomics', 'Statistics', 'Economic History'),
+    allowNull: false
+  },
+  difficulty: {
+    type: DataTypes.ENUM('Beginner', 'Intermediate', 'Advanced'),
+    allowNull: false
+  },
+  duration: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1
+    }
+  },
+  totalMarks: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 0
+    }
+  },
+  passingMarks: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 0
+    }
+  },
+  isPublished: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  instructions: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  tags: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    defaultValue: []
+  },
+  attempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  averageScore: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0
+  },
+  createdBy: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   }
-);
-
-// Add indexes for better query performance
-testSchema.index({ category: 1, difficulty: 1 });
-testSchema.index({ title: 'text', description: 'text' });
-
-const Test = mongoose.model('Test', testSchema);
+}, {
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['category', 'difficulty']
+    },
+    {
+      fields: ['title']
+    }
+  ]
+});
 
 module.exports = Test;

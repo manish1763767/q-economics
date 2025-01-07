@@ -1,97 +1,97 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const optionSchema = new mongoose.Schema({
+const Question = sequelize.define('Question', {
   text: {
-    type: String,
-    required: true,
-    trim: true,
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
-  isCorrect: {
-    type: Boolean,
-    required: true,
-    default: false,
+  type: {
+    type: DataTypes.ENUM('multiple-choice', 'true-false', 'short-answer'),
+    allowNull: false
+  },
+  category: {
+    type: DataTypes.ENUM('Microeconomics', 'Macroeconomics', 'Statistics', 'Economic History'),
+    allowNull: false
+  },
+  difficulty: {
+    type: DataTypes.ENUM('Beginner', 'Intermediate', 'Advanced'),
+    allowNull: false
+  },
+  marks: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 0
+    }
+  },
+  options: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    validate: {
+      isValidOptions(value) {
+        if (this.type === 'multiple-choice' && (!Array.isArray(value) || value.length < 2)) {
+          throw new Error('Multiple choice questions must have at least 2 options');
+        }
+      }
+    }
+  },
+  correctAnswer: {
+    type: DataTypes.STRING,
+    allowNull: function() {
+      return this.type === 'short-answer';
+    }
   },
   explanation: {
-    type: String,
-    trim: true,
+    type: DataTypes.TEXT
   },
-});
-
-const questionSchema = new mongoose.Schema(
-  {
-    text: {
-      type: String,
-      required: [true, 'Question text is required'],
-      trim: true,
-    },
-    type: {
-      type: String,
-      required: [true, 'Question type is required'],
-      enum: ['multiple-choice', 'true-false', 'short-answer'],
-    },
-    category: {
-      type: String,
-      required: [true, 'Question category is required'],
-      enum: ['Microeconomics', 'Macroeconomics', 'Statistics', 'Economic History'],
-    },
-    difficulty: {
-      type: String,
-      required: [true, 'Difficulty level is required'],
-      enum: ['Beginner', 'Intermediate', 'Advanced'],
-    },
-    marks: {
-      type: Number,
-      required: [true, 'Marks are required'],
-      min: [0, 'Marks cannot be negative'],
-    },
-    options: [optionSchema],
-    correctAnswer: {
-      type: String,
-      required: function() {
-        return this.type === 'short-answer';
-      },
-    },
-    explanation: {
-      type: String,
-      trim: true,
-    },
-    hint: {
-      type: String,
-      trim: true,
-    },
-    image: {
-      type: String, // URL to image if question has an image
-    },
-    tags: [{
-      type: String,
-      trim: true,
-    }],
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    usageCount: {
-      type: Number,
-      default: 0,
-    },
-    successRate: {
-      type: Number,
-      default: 0,
+  hint: {
+    type: DataTypes.TEXT
+  },
+  image: {
+    type: DataTypes.STRING
+  },
+  tags: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    defaultValue: []
+  },
+  createdBy: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
+  },
+  usageCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  successRate: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
+    validate: {
       min: 0,
-      max: 100,
-    },
-  },
-  {
-    timestamps: true,
+      max: 100
+    }
   }
-);
-
-// Add indexes for better query performance
-questionSchema.index({ category: 1, difficulty: 1 });
-questionSchema.index({ tags: 1 });
-questionSchema.index({ text: 'text' });
-
-const Question = mongoose.model('Question', questionSchema);
+}, {
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['category', 'difficulty']
+    },
+    {
+      fields: ['tags']
+    },
+    {
+      fields: ['text'],
+      type: 'FULLTEXT'
+    }
+  ]
+});
 
 module.exports = Question;
