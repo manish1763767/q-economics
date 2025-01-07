@@ -2,12 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectDB = require('./config/db');
+const sequelize = require('./config/database');
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Test database connection
+sequelize.authenticate()
+  .then(() => {
+    console.log('Database connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 // CORS configuration
 const corsOptions = {
@@ -63,6 +69,13 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!'
   });
 });
+
+// Sync database (in development)
+if (process.env.NODE_ENV !== 'production') {
+  sequelize.sync({ alter: true }).then(() => {
+    console.log('Database synced');
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
