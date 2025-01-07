@@ -1,40 +1,63 @@
 {
   "name": "q-economics",
   "version": "1.0.0",
-  "description": "Online testing portal for economics students",
-  "main": "server/index.js",
+  "description": "Online testing portal for students",
   "scripts": {
     "start": "node server/index.js",
-    "server": "nodemon server/index.js",
+    "dev": "nodemon server/index.js",
     "client": "cd client && npm start",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install-client": "cd client && npm install",
+    "dev:full": "concurrently \"npm run dev\" \"npm run client\"",
+    "install-client": "cd client && npm install --legacy-peer-deps",
     "build-client": "cd client && npm run build",
     "build": "npm install && npm run install-client && npm run build-client",
-    "db:migrate": "sequelize-cli db:migrate",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
+    "migrate": "sequelize-cli db:migrate",
+    "migrate:undo": "sequelize-cli db:migrate:undo",
+    "seed": "sequelize-cli db:seed:all",
+    "backup": "node server/scripts/backup.js",
+    "backup-status": "node server/scripts/backup-status.js",
+    "init-backup": "mkdir -p backups && node server/scripts/backup.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "ci": "npm run lint && npm run test",
+    "logs:rotate": "node server/scripts/rotate-logs.js",
+    "logs:clean": "node server/scripts/clean-logs.js",
+    "perf:load": "node server/tests/performance/loadTest.js",
+    "perf:stress": "node server/tests/performance/stressTest.js",
+    "perf:all": "npm run perf:load && npm run perf:stress"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "express-validator": "^7.0.1",
-    "jsonwebtoken": "^9.0.0",
     "pg": "^8.11.3",
     "sequelize": "^6.33.0",
-    "sequelize-cli": "^6.6.2"
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "@slack/webhook": "^6.1.0",
+    "aws-sdk": "^2.1499.0",
+    "moment": "^2.29.4",
+    "nodemailer": "^6.9.7",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-elasticsearch": "^0.17.4",
+    "path": "^0.12.7"
   },
   "devDependencies": {
-    "concurrently": "^8.0.1",
-    "eslint": "^8.38.0",
-    "jest": "^29.5.0",
-    "nodemon": "^2.0.22"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/jest": "^27.5.2",
+    "autocannon": "^7.12.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.51.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-security": "^1.7.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   },
   "engines": {
-    "node": ">=14.0.0"
-  },
-  "author": "",
-  "license": "ISC"
+    "node": ">=16.0.0"
+  }
 }
