@@ -52,7 +52,8 @@ async function registerUser(username, password) {
     const user = await User.create({ email: username, password: hashedPassword, role: 'student' }); // Set default role to student
     return user;
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error('Error registering user:', error.message); // Log error message
+    console.error('Full error details:', error); // Log full error details
     throw new Error('Registration failed. Please try again.');
   }
 }
