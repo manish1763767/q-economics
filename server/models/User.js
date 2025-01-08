@@ -24,8 +24,8 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   role: {
-    type: DataTypes.ENUM('student', 'admin'),
-    defaultValue: 'student',
+    type: DataTypes.ENUM('user', 'admin'),
+    defaultValue: 'user',
   },
 });
 
@@ -49,7 +49,7 @@ async function registerUser(username, password) {
   try {
     // Hash password and save to database
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email: username, password: hashedPassword, role: 'student' }); // Set default role to student
+    const user = await User.create({ email: username, password: hashedPassword, role: 'user' }); // Set default role to user
     return user;
   } catch (error) {
     console.error('Error registering user:', error.message); // Log error message
@@ -75,4 +75,4 @@ async function loginUser(username, password) {
   return user;
 }
 
-module.exports = { User, registerUser, loginUser };
+module.exports = User;
