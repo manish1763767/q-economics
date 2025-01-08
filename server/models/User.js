@@ -40,4 +40,38 @@ User.prototype.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = User;
+// Improved registration and login logic
+async function registerUser(username, password) {
+  // Add validation and error handling
+  if (!username || !password) {
+    throw new Error('Username and password are required.');
+  }
+  try {
+    // Hash password and save to database
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ email: username, password: hashedPassword, role: 'student' }); // Set default role to student
+    return user;
+  } catch (error) {
+    console.error('Error registering user:', error);
+    throw new Error('Registration failed. Please try again.');
+  }
+}
+
+async function loginUser(username, password) {
+  // Add validation and error handling
+  if (!username || !password) {
+    throw new Error('Username and password are required.');
+  }
+  // Verify user credentials
+  const user = await User.findOne({ where: { email: username } });
+  if (!user) {
+    throw new Error('Invalid username or password');
+  }
+  const isValidPassword = await user.comparePassword(password);
+  if (!isValidPassword) {
+    throw new Error('Invalid username or password');
+  }
+  return user;
+}
+
+module.exports = { User, registerUser, loginUser };
