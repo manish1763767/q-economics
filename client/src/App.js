@@ -9,6 +9,9 @@ import TestCatalog from './pages/TestCatalog';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import AdminLogin from './pages/AdminLogin';
+import TestList from './components/TestList';
+import TestDetail from './components/TestDetail';
+import TestSubmission from './components/TestSubmission';
 
 const theme = createTheme({
   palette: {
@@ -99,7 +102,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/tests" element={<TestCatalog />} />
+          <Route path="/tests" element={<TestList />} />
+          <Route path="/tests/:id" element={<TestDetail />} />
+          <Route path="/tests/:id/submit" element={<TestSubmission />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route
@@ -110,6 +115,7 @@ function App() {
               </ProtectedAdminRoute>
             }
           />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     </ThemeProvider>
