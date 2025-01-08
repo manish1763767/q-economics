@@ -3,11 +3,16 @@ const path = require('path');
 const fs = require('fs').promises;
 const handlebars = require('handlebars');
 
-// Create reusable transporter
+// Validate environment variables
+if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  throw new Error('Missing required SMTP configuration');
+}
+
+// Create reusable transporter with validated config
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === 'true',
+  port: process.env.SMTP_PORT || 587,
+  secure: process.env.SMTP_PORT === '465',
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,

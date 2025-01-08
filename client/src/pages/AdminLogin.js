@@ -27,19 +27,31 @@ function AdminLogin() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
-    // Mock admin credentials - Replace with actual authentication
-    const ADMIN_EMAIL = 'admin@qeconomics.com';
-    const ADMIN_PASSWORD = 'admin123';
+    try {
+      const response = await fetch('/api/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include', // For secure HTTP-only cookies
+      });
 
-    if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASSWORD) {
-      // Store admin authentication status
-      localStorage.setItem('isAdmin', 'true');
-      navigate('/admin');
-    } else {
-      setError('Invalid email or password');
+      if (response.ok) {
+        const data = await response.json();
+        sessionStorage.setItem('adminToken', data.token); // Use sessionStorage instead of localStorage
+        navigate('/admin');
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
+      console.error('Login error:', error);
     }
   };
 
