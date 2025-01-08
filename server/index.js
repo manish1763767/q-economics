@@ -14,8 +14,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // Import and use other route handlers here
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/tests', require('./routes/tests'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/tests', require('./routes/tests'));
 
 // Serve static files from the React build
 if (process.env.NODE_ENV === 'production') {
