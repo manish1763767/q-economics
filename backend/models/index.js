@@ -49,6 +49,22 @@ const initDb = async () => {
         await sequelize.sync();
         console.log('Models synchronized with database.');
 
+        // Create admin user if not exists
+        const User = require('./user');
+        const adminExists = await User.findOne({
+            where: { role: 'admin' }
+        });
+
+        if (!adminExists) {
+            await User.create({
+                name: 'Admin',
+                email: 'admin@qeconomics.com',
+                password: 'admin123',
+                role: 'admin'
+            });
+            console.log('Default admin user created');
+        }
+
         // Seed initial data if tables are empty
         const testCount = await MockTest.count();
         if (testCount === 0) {
