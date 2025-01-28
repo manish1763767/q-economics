@@ -2,12 +2,23 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { MockTest, PreviousPaper, initDb } = require('./models');
+const fs = require('fs');
+const cookieParser = require('cookie-parser');
+const { initDb } = require('./models');
+const authRoutes = require('./routes/auth');
+const testRoutes = require('./routes/tests');
+const paperRoutes = require('./routes/papers');
 
-// Verify database URL is available
-if (!process.env.DATABASE_URL) {
-    console.error('DATABASE_URL environment variable is required');
+// Verify required environment variables
+if (!process.env.DATABASE_URL || !process.env.JWT_SECRET) {
+    console.error('Required environment variables are missing');
     process.exit(1);
+}
+
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const app = express();
@@ -16,37 +27,18 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api', testRoutes);
+app.use('/api', paperRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Initialize database and models
 initDb();
-
-// API routes
-app.use('/api', (req, res, next) => {
-    req.url = req.url.replace('/api', '');
-    next();
-});
-
-// Define routes for mock tests
-app.get('/mock-tests', async (req, res) => {
-    try {
-        const mockTests = await MockTest.findAll();
-        res.json(mockTests);
-    } catch (error) {
-        console.error('Error fetching mock tests:', error);
-        res.status(500).json({ error: 'Error fetching mock tests' });
-    }
-});
-
-// Define routes for previous papers
-app.get('/previous-papers', async (req, res) => {
-    try {
-        const papers = await PreviousPaper.findAll();
-        res.json(papers);
-    } catch (error) {
-        console.error('Error fetching previous papers:', error);
-        res.status(500).json({ error: 'Error fetching previous papers' });
-    }
-});
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

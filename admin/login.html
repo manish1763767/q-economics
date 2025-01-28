@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Q-economics</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Admin Login</h1>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <div id="error-message" class="error-message"></div>
+        </div>
+    </div>
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const errorDiv = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                if (data.user.role !== 'admin') {
+                    throw new Error('Admin access required');
+                }
+
+                // Store token and redirect to admin dashboard
+                localStorage.setItem('token', data.token);
+                window.location.href = '/admin/dashboard.html';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

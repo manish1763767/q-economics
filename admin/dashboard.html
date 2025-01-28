@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Q-economics</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h1>Q-economics Admin</h1>
+            <nav class="nav-menu">
+                <a href="#" class="active" onclick="showSection('tests')">Mock Tests</a>
+                <a href="#" onclick="showSection('papers')">Previous Papers</a>
+                <a href="#" onclick="showSection('users')">Users</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Mock Tests Section -->
+            <section id="tests" class="section">
+                <div class="content-header">
+                    <h2>Mock Tests</h2>
+                    <button class="action-btn" onclick="openModal('addTestModal')">Add New Test</button>
+                </div>
+                <div class="card">
+                    <table class="table" id="testsTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Duration</th>
+                                <th>Questions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Previous Papers Section -->
+            <section id="papers" class="section" style="display: none;">
+                <div class="content-header">
+                    <h2>Previous Papers</h2>
+                    <button class="action-btn" onclick="openModal('addPaperModal')">Add New Paper</button>
+                </div>
+                <div class="card">
+                    <table class="table" id="papersTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users" class="section" style="display: none;">
+                <div class="content-header">
+                    <h2>Users</h2>
+                    <button class="action-btn" onclick="openModal('addUserModal')">Add New User</button>
+                </div>
+                <div class="card">
+                    <table class="table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Test Modal -->
+    <div id="addTestModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addTestModal')">&times;</button>
+            <h2>Add New Test</h2>
+            <form id="addTestForm" onsubmit="handleAddTest(event)">
+                <div class="form-group">
+                    <label for="testTitle">Title</label>
+                    <input type="text" id="testTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="testDuration">Duration (hours)</label>
+                    <input type="number" id="testDuration" required>
+                </div>
+                <div class="form-group">
+                    <label for="testQuestions">Number of Questions</label>
+                    <input type="number" id="testQuestions" required>
+                </div>
+                <button type="submit" class="action-btn">Add Test</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Paper Modal -->
+    <div id="addPaperModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addPaperModal')">&times;</button>
+            <h2>Add New Paper</h2>
+            <form id="addPaperForm" onsubmit="handleAddPaper(event)">
+                <div class="form-group">
+                    <label for="paperTitle">Title</label>
+                    <input type="text" id="paperTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="paperType">Type</label>
+                    <input type="text" id="paperType" required>
+                </div>
+                <div class="form-group">
+                    <label for="paperFile">PDF File</label>
+                    <input type="file" id="paperFile" accept=".pdf" required>
+                </div>
+                <button type="submit" class="action-btn">Add Paper</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
