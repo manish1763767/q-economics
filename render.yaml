@@ -9,8 +9,8 @@ services:
     name: q-economics
     env: node
     region: singapore
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -20,6 +20,7 @@ services:
           property: connectionString
       - key: PORT
         value: 8080
+    staticPublishPath: ./
     routes:
       - type: rewrite
         source: /api/*
@@ -27,7 +28,6 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-    staticPublishPath: ./
     headers:
       - path: /*
         name: Cache-Control
